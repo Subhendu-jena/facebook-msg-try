@@ -36,7 +36,8 @@ app.post('/webhook', (req, res) => {
     body.entry.forEach(entry => {
       const event = entry.messaging[0];
       if (event.message) {
-        console.log(`Received message from User ID: ${senderId}`);
+        const senderId = event.sender.id;
+        console.log(`Received message from User ID: ${senderId} `);
         handleMessage(event.sender.id, event.message);
       }
     });
