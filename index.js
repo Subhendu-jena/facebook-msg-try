@@ -31,12 +31,12 @@ app.get('/webhook', (req, res) => {
 // Handle Webhook Events
 app.post('/webhook', (req, res) => {
   const body = req.body;
-
+  let senderId
   if (body.object === 'page') {
     body.entry.forEach(entry => {
       const event = entry.messaging[0];
       if (event.message) {
-        const senderId = event.sender.id;
+        senderId = event.sender.id;
         console.log(`Received message from User ID: ${senderId} `);
         handleMessage(event.sender.id, event.message);
       }
