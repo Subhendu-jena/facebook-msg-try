@@ -41,7 +41,7 @@ app.post('/webhook', (req, res) => {
         handleMessage(event.sender.id, event.message);
       }
     });
-    res.status(200).send('EVENT_RECEIVED');
+    res.status(200).send(`EVENT_RECEIVED: ${senderId}`);
   } else {
     res.sendStatus(404);
   }
