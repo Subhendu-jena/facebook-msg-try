@@ -69,6 +69,50 @@ async function handleMessage(senderId, receivedMessage) {
   );
 }
 
+// Helper function to fetch messages for a thread ID
+async function fetchMessages(threadId) {
+  try {
+    // Fetch the list of message IDs for the given thread
+    const threadResponse = await axios.get(`https://graph.facebook.com/v12.0/${threadId}/messages`, {
+      params: {
+        access_token: PAGE_ACCESS_TOKEN,
+      },
+    });
+
+    const messagesData = threadResponse.data.data;
+    const formattedMessages = [];
+
+    // Fetch details for each message ID
+    for (const message of messagesData) {
+      const messageDetails = await axios.get(`https://graph.facebook.com/v12.0/${message.id}`, {
+        params: {
+          fields: 'message,attachments,from,created_time',
+          access_token: PAGE_ACCESS_TOKEN,
+        },
+      });
+
+      formattedMessages.push(messageDetails.data);
+    }
+
+    return formattedMessages;
+  } catch (error) {
+    console.error('Error fetching messages:', error.response?.data || error.message);
+    throw new Error('Failed to fetch messages.');
+  }
+}
+
+// API route to fetch and return formatted messages
+app.get('/messages/:threadId', async (req, res) => {
+  const { threadId } = req.params;
+
+  try {
+    const messages = await fetchMessages(threadId);
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
