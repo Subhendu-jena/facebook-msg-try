@@ -73,21 +73,17 @@ async function handleMessage(senderId, receivedMessage) {
 async function fetchMessages(threadId) {
   try {
     // Fetch the list of message IDs for the given thread
-    const threadResponse = await axios.get(`https://graph.facebook.com/v12.0/${threadId}/messages`, {
-      params: {
-        access_token: PAGE_ACCESS_TOKEN,
-      },
-    });
+    const threadResponse = await axios.get(`https://graph.facebook.com/v12.0/${threadId}/messages?access_token=${process.env.PAGE_ACCESS_TOKEN}`);
 
     const messagesData = threadResponse.data.data;
-    const formattedMessages = [];
+     const formattedMessages = [];
 
     // Fetch details for each message ID
     for (const message of messagesData) {
       const messageDetails = await axios.get(`https://graph.facebook.com/v12.0/${message.id}`, {
         params: {
           fields: 'message,attachments,from,created_time',
-          access_token: PAGE_ACCESS_TOKEN,
+          access_token: process.env.PAGE_ACCESS_TOKEN,
         },
       });
 
